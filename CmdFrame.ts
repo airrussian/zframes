@@ -2,13 +2,15 @@ import { ZTypes } from "ztypes";
 import { Frame } from "./Frame";
 import { IFrame } from "./IFrame";
 import { IFramePayload } from "./IFramePayload";
+import { FrameHeader } from "./FrameHeader";
 
 export default class CmdFrame extends Frame {
 
     private reqCode: ZTypes.U16;
     
-    constructor( cmd: IFramePayload ) {        
-        super(Frame.Desc.Reg, Frame.Opcode.Request, cmd );
+    constructor( cmd: IFramePayload ) {      
+        const hFrm = new FrameHeader( Frame.Desc.Reg, Frame.Opcode.Request );
+        super(hFrm, cmd );
         this.reqCode = cmd.U16(0);
     }
 

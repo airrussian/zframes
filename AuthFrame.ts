@@ -1,6 +1,9 @@
 import { ZTypes } from "ztypes";
 import { Frame } from "./Frame";
 import { IFrame } from "./IFrame";
+import { FrameHeader } from "./FrameHeader";
+import { RequestOpcodeFrame } from "./headers/opcode/RequestOpcodeFrame";
+import { AuthDescFrame } from "./headers/desc/AutDescFrame";
 
 export default class AuthFrame extends Frame {
 
@@ -30,7 +33,9 @@ export default class AuthFrame extends Frame {
 
     constructor(bType: number, serial: number, password: number) {
 
-        super(Frame.Desc.Auth, Frame.Opcode.Request);
+        const hFrm = new FrameHeader( AuthDescFrame, RequestOpcodeFrame );
+
+        super(hFrm);
 
         this.aType = ZTypes.U16(0);
         this.bType = ZTypes.U16(bType);

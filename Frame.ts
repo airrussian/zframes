@@ -5,29 +5,40 @@ import {IFramePayload} from "./IFramePayload";
 import {IFrameHeader} from "./IFrameHeader";
 import {FrameHeader} from "./FrameHeader";
 
+import { AuthDescFrame } from "./headers/desc/AutDescFrame";
+import { RegDescFrame } from "./headers/desc/RegDescFrame";
+import { EndpointDescFrame } from "./headers/desc/EndpointDescFrame";
+import { ServerDescFrame } from "./headers/desc/ServerDescFrame";
+import { RequestOpcodeFrame } from "./headers/opcode/RequestOpcodeFrame";
+import { ReplyOpcodeFrame } from "./headers/opcode/ReplyOpcodeFrame";
+import { CommandOpcodeFrame } from "./headers/opcode/CommandOpcodeFrame";
+import { NopOpcodeFrame } from "./headers/opcode/NopOpcodeFrame";
+import { NotificationOpcodeFrame } from "./headers/opcode/NotificationOpcodeFrame";
+
 export class Frame implements IFrame {
 
     public static Desc = {
-        Auth            : ZTypes.U16(0x0000),
-        Reg             : ZTypes.U16(0x0001),
-        Endpoint        : ZTypes.U16(0x0002),
-        Server          : ZTypes.U16(0x0003),
+        Auth            : AuthDescFrame,
+        Reg             : RegDescFrame,
+        Endpoint        : EndpointDescFrame,
+        Server          : ServerDescFrame,
         Mock            : ZTypes.U16(0x00ff)
     }
 
     public static Opcode = {
-        Request         : ZTypes.U16(0x0000),
-        Reply           : ZTypes.U16(0x0001),
-        Command         : ZTypes.U16(0x0002),
-        Notification    : ZTypes.U16(0x0003),
-        Nop             : ZTypes.U16(0x0004)
+        Request         : RequestOpcodeFrame,
+        Reply           : ReplyOpcodeFrame,
+        Command         : CommandOpcodeFrame,
+        Notification    : NotificationOpcodeFrame,
+        Nop             : NopOpcodeFrame
     }
 
     header: IFrameHeader; 
+
     payload: IFramePayload;
 
-    constructor(desc: ZTypes.U16, opcode: ZTypes.U16, payload: IFramePayload = new ZTypes.ZArray()) {
-        this.header = new FrameHeader( desc, opcode );
+    constructor( header: IFrameHeader, payload: IFramePayload = new ZTypes.ZArray() ) {
+        this.header = header;
         this.setPayload( payload );
     }
 
@@ -36,11 +47,10 @@ export class Frame implements IFrame {
         this.header.setLength( this.payload.length );
     }
 
-    static create( buff: ZTypes.ZArray ): Frame {
-        const frm = new Frame(buff.U16(0), buff.U16(2));
-        if (buff.length > 6)
-            frm.setPayload( new ZTypes.ZArray([...buff.slice(6)]));
-        return frm;
+    static create( array: ZTypes.ZArray ): Frame {
+        const hFrm = new FrameHeader(array.U16(0), array.U16(2));    
+        const pFrm = (array.length > 6) ? new ZTypes.ZArray([...array.slice(6)]) : new ZTypes.ZArray();
+        return new Frame(hFrm, pFrm);
     }
 
     toBytes(): ZTypes.ZArray {
@@ -59,7 +69,3 @@ export class Frame implements IFrame {
     }
 
 }
-
-export const FrameCreate = 
-    (desc: ZTypes.U16, opcode: ZTypes.U16, payload: IFramePayload = new ZTypes.ZArray()) => 
-        new Frame(desc, opcode, payload);

@@ -1,7 +1,7 @@
 import { ZTypes } from "ztypes";
 
 export declare interface IFrameHeader {
-    desc: ZTypes.U16;
+    desc: ;
 
     opcode: ZTypes.U16;
 

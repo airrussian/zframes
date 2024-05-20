@@ -1,7 +1,8 @@
 {
   "name": "zframe",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.ts",
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -9,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ztypes": "file:../zTypes"
+    "ztypes": "git://git@github.com:airrussian/ztypes.git#1.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
